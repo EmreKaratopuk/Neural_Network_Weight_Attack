@@ -37,8 +37,11 @@ class BFA(object):
         w_bin = int2bin(m.weight.detach().view(-1), m.N_bits).short()
         w_bin_topk = w_bin[w_idx_topk]  # get the weights whose grads are topk
         # generate two's complement bit-map
-        b_bin_topk = (w_bin_topk.repeat(m.N_bits,1) & m.b_w.abs().repeat(1,self.k_top).short()) \
-        // m.b_w.abs().repeat(1,self.k_top).short()
+        b_bin_topk = torch.div(
+            w_bin_topk.repeat(m.N_bits, 1) & m.b_w.abs().repeat(1, self.k_top).short(),
+            m.b_w.abs().repeat(1, self.k_top).short(),
+            rounding_mode='trunc'
+        )
         grad_mask = b_bin_topk ^ b_grad_topk_sign.short()
 
         # 4. apply the gradient mask upon ```b_grad_topk``` and in-place update it

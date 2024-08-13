@@ -42,7 +42,7 @@ def weight_conversion(model):
 def count_ones(t, n_bits):
     counter = 0
     for i in range(n_bits):
-        counter += ((t & 2**i) // 2**i).sum()
+        counter += torch.div((t & 2**i), 2**i, rounding_mode='trunc').sum()
     return counter.item()
 
 
