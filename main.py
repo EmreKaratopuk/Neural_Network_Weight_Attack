@@ -27,7 +27,6 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
 parser.add_argument('--data_path',
-                    default='/home/elliot/data/pytorch/svhn/',
                     type=str,
                     help='Path to dataset')
 parser.add_argument(
@@ -514,10 +513,11 @@ def main():
         ## Log the graidents distribution
         for name, param in net.named_parameters():
             name = name.replace('.', '/')
-            writer.add_histogram(name + '/grad',
-                                 param.grad.clone().cpu().data.numpy(),
-                                 epoch + 1,
-                                 bins='tensorflow')
+            if param.grad is not None:
+                writer.add_histogram(name + '/grad',
+                                     param.grad.clone().cpu().data.numpy(),
+                                     epoch + 1,
+                                     bins='tensorflow')
 
         # ## Log the weight and bias distribution
         for name, module in net.named_modules():
